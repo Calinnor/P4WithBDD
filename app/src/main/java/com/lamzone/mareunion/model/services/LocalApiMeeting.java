@@ -1,22 +1,22 @@
 package com.lamzone.mareunion.model.services;
 
+import androidx.lifecycle.LiveData;
+
 import com.lamzone.mareunion.model.items.Meeting;
 
 import java.util.List;
 
-public interface LocalApiMeeting {
-
+public interface LocalApiMeeting {//replace fakeapimeeting with dao data
     List<Meeting> getMeeting();
 
-    /**
-     * @param meeting dont forget to put param for methods !(
-     */
+    void createDataMeeting(Meeting meeting);
 
-    void deleteMeeting(Meeting meeting);
+    LiveData<List<Meeting>> getMeetingsForOnePlaceItem(long placeItemId);
 
-    void addNewMeeting(Meeting meeting);
+    void updateDataMeeting(Meeting meeting);
+
+    void deleteMeeting(long meetingId);
 
     List<Meeting> filteringOptions(String filteredOption);
 
 }
-

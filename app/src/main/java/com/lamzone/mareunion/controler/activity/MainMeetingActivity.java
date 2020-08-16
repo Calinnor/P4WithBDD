@@ -22,9 +22,10 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.lamzone.mareunion.R;
 import com.lamzone.mareunion.controler.fragment.DatePickerFragment;
 import com.lamzone.mareunion.di.DI;
-import com.lamzone.mareunion.model.services.LocalApiMeeting;
-import com.lamzone.mareunion.model.services.LocalApiPlace;
+import com.lamzone.mareunion.model.services.FakeApiMeeting;
+import com.lamzone.mareunion.model.services.FakeApiPlace;
 import com.lamzone.mareunion.model.items.Meeting;
+import com.lamzone.mareunion.model.services.LocalApiMeeting;
 import com.lamzone.mareunion.utils.DateUtils;
 import com.lamzone.mareunion.view.event.DeleteMeetingEvent;
 import com.lamzone.mareunion.view.recycler.MyMeetingAdapter;
@@ -47,8 +48,9 @@ public class MainMeetingActivity extends AppCompatActivity implements DatePicker
      * 3/ declare and initiate list of meeting else=crash
      */
 
+    FakeApiMeeting mFakeApiMeeting;
+    FakeApiPlace mFakeApiPlace;
     LocalApiMeeting mLocalApiMeeting;
-    LocalApiPlace mLocalApiPlace;
     private List<Meeting> mMeeting = new ArrayList<>();
     @BindView(R.id.list_meetings_for_recyclerView)
     RecyclerView mRecyclerView;
@@ -68,8 +70,9 @@ public class MainMeetingActivity extends AppCompatActivity implements DatePicker
         setContentView(R.layout.activity_main_meeting);
 
         ButterKnife.bind(this);
-        mLocalApiMeeting = DI.getMeetingApi();
-        mLocalApiPlace = DI.getApiPlace();
+        //mFakeApiMeeting = DI.getMeetingApi();
+        mLocalApiMeeting = DI.getLocalApiMeeting();
+        mFakeApiPlace = DI.getApiPlace();
         this.configureToolbar();
         clickOnAddNewMeetingButton();
         /**
@@ -92,14 +95,14 @@ public class MainMeetingActivity extends AppCompatActivity implements DatePicker
      * initiate then given life to list of meeting
      */
     private void initList() {
-        myMeetingAdapter = new MyMeetingAdapter(mLocalApiMeeting.getMeeting());
+        myMeetingAdapter = new MyMeetingAdapter(mFakeApiMeeting.getMeeting());
         mRecyclerView.setAdapter(myMeetingAdapter);
         selectVisibility();
     }
 
     private void initEmptyList() {
-        mLocalApiMeeting.getMeeting().clear();
-        myMeetingAdapter.updateMeetings(mLocalApiMeeting.getMeeting());
+        mFakeApiMeeting.getMeeting().clear();
+        myMeetingAdapter.updateMeetings(mFakeApiMeeting.getMeeting());
         selectVisibility();
     }
 
@@ -164,7 +167,7 @@ public class MainMeetingActivity extends AppCompatActivity implements DatePicker
      */
     @Subscribe
     public void onDeleteMeeting(DeleteMeetingEvent event) {
-        mLocalApiMeeting.deleteMeeting(event.mMeeting);
+        mFakeApiMeeting.deleteMeeting(event.mMeeting);
         initList();
     }
 
@@ -177,14 +180,14 @@ public class MainMeetingActivity extends AppCompatActivity implements DatePicker
 
 
     private void dialogBoxForPlaceNameFiltering() {
-        List<String> placeNames = new ArrayList<>(mLocalApiPlace.getPlaceNames());
+        List<String> placeNames = new ArrayList<>(mFakeApiPlace.getPlaceNames());
         String[] placeNamesToFiltered = new String[placeNames.size()];
         placeNames.toArray(placeNamesToFiltered);
         final String[] places = new String[1];
         final AlertDialog.Builder builderRoom = new AlertDialog.Builder(this);
         builderRoom.setTitle("Choisissez une Salle");
         builderRoom.setSingleChoiceItems(placeNamesToFiltered, -1, (dialog, placeName) -> places[0] = placeNamesToFiltered[placeName]);
-        builderRoom.setPositiveButton("OK", (dialogInterface, i) -> mRecyclerView.setAdapter(new MyMeetingAdapter(mLocalApiMeeting.filteringOptions(places[0]))));
+        builderRoom.setPositiveButton("OK", (dialogInterface, i) -> mRecyclerView.setAdapter(new MyMeetingAdapter(mFakeApiMeeting.filteringOptions(places[0]))));
         builderRoom.setNegativeButton("Annuler", (dialog, resetButton) -> initEmptyList());
         AlertDialog dialogRoom = builderRoom.create();
         dialogRoom.show();
@@ -194,11 +197,11 @@ public class MainMeetingActivity extends AppCompatActivity implements DatePicker
     @Override
     public void onDateSet(DatePicker view, int year, int month, int dayOfMonth) {
         mDateToFilter = DateUtils.datePickerSet(year, month+1, dayOfMonth);
-        mRecyclerView.setAdapter(new MyMeetingAdapter(mLocalApiMeeting.filteringOptions(mDateToFilter)));
+        mRecyclerView.setAdapter(new MyMeetingAdapter(mFakeApiMeeting.filteringOptions(mDateToFilter)));
     }
 
     private void selectVisibility() {
-        if (mLocalApiMeeting.getMeeting().size() == 0) {
+        if (mFakeApiMeeting.getMeeting().size() == 0) {
             textViewNothingToShow.setVisibility(View.VISIBLE);
             mRecyclerView.setVisibility(View.GONE);
         } else {

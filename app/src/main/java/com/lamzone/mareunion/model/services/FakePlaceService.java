@@ -4,7 +4,7 @@ import com.lamzone.mareunion.model.items.PlaceItem;
 
 import java.util.List;
 
-public class PlaceServiceLocal implements LocalApiPlace {
+public class FakePlaceService implements FakeApiPlace {
     private List<PlaceItem> mPlaceItems = PlaceGenerator.generatePlace();
     private List<String> mPlaceNames = PlaceGenerator.generatePlaceNames();
 

@@ -29,10 +29,11 @@ import com.lamzone.mareunion.R;
 import com.lamzone.mareunion.controler.fragment.DatePickerFragment;
 import com.lamzone.mareunion.controler.fragment.TimePickeFragment;
 import com.lamzone.mareunion.di.DI;
-import com.lamzone.mareunion.model.services.LocalApiMeeting;
-import com.lamzone.mareunion.model.services.LocalApiPlace;
+import com.lamzone.mareunion.model.services.FakeApiMeeting;
+import com.lamzone.mareunion.model.services.FakeApiPlace;
 import com.lamzone.mareunion.model.items.Meeting;
 import com.lamzone.mareunion.model.items.PlaceItem;
+import com.lamzone.mareunion.model.services.LocalApiMeeting;
 import com.lamzone.mareunion.utils.DateUtils;
 import com.lamzone.mareunion.view.recycler.MailListRecyclerViewAdapter;
 import com.lamzone.mareunion.view.recycler.PlaceAdapter;
@@ -49,15 +50,17 @@ import butterknife.ButterKnife;
 
 public class AddNewMeetingActivity extends AppCompatActivity implements TimePickerDialog.OnTimeSetListener, DatePickerDialog.OnDateSetListener, MailListRecyclerViewAdapter.MailsToDelete {
 
-    private LocalApiMeeting mLocalApiMeeting;
-    private LocalApiPlace mLocalApiPlace;
+    private FakeApiMeeting mFakeApiMeeting;
+    private FakeApiPlace mFakeApiPlace;
+    private LocalApiMeeting mLoacalApiMeeting;
 
     private Date timeDateStart;
     private Date timeDateEnd;
     private long dateDisponibility;
     private int browseMeeting;
-
     private int selectedTime;
+    private long placeItemId;
+    private int pkMeetingId;
 
     @BindView(R.id.createNewMeeting)
     Button saveButton;
@@ -82,7 +85,7 @@ public class AddNewMeetingActivity extends AppCompatActivity implements TimePick
     TextView placeChoice;
     @BindView(R.id.spinner_place)
     Spinner spinnerPlace;
-    private int clickedColorPlaceTag;
+    private long clickedColorPlaceTag;
     private ArrayList<PlaceItem> mPlaceItemsList;
     private String mMeetingPlace = "";
 
@@ -106,8 +109,9 @@ public class AddNewMeetingActivity extends AppCompatActivity implements TimePick
         ButterKnife.bind(this);
         configureRecyclerView();
         onAddMailButtonClick();
-        mLocalApiMeeting = DI.getMeetingApi();
-        mLocalApiPlace = DI.getApiPlace();
+        //mFakeApiMeeting = DI.getMeetingApi();
+        mLoacalApiMeeting = DI.getLocalApiMeeting();
+        mFakeApiPlace = DI.getApiPlace();
         addDateToMeeting();
         addEndTimeToMeeting();
         addStartTimeToMeeting();
@@ -172,7 +176,7 @@ public class AddNewMeetingActivity extends AppCompatActivity implements TimePick
     }
 
     public void addNewMeeting() {
-        Meeting meeting = new Meeting(clickedColorPlaceTag,
+        Meeting meeting = new Meeting(placeItemId, pkMeetingId, clickedColorPlaceTag,
                 mObjectOfMeeting,
                 "-" + startTimeDialogBox.getText().toString() + "-",
                 endTimeDialogBox.getText().toString(),
@@ -181,7 +185,7 @@ public class AddNewMeetingActivity extends AppCompatActivity implements TimePick
                 enterDate.getText().toString(),
                 dateDisponibility = timeDateEnd.getTime()
         );
-        mLocalApiMeeting.addNewMeeting(meeting);
+        mFakeApiMeeting.addNewMeeting(meeting);
         finish();
     }
 
@@ -210,7 +214,7 @@ public class AddNewMeetingActivity extends AppCompatActivity implements TimePick
 
 
     private void initPlacesList() {
-        mPlaceItemsList = new ArrayList<>(mLocalApiPlace.getPlaceItem());
+        mPlaceItemsList = new ArrayList<>(mFakeApiPlace.getPlaceItem());
     }
 
     private void addNewPlace() {
@@ -220,8 +224,8 @@ public class AddNewMeetingActivity extends AppCompatActivity implements TimePick
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
                 PlaceItem clickedPlaceItem = (PlaceItem) parent.getItemAtPosition(position);
-                placeChoice.setText(clickedPlaceItem.getmPlaceName());
-                clickedColorPlaceTag = clickedPlaceItem.getmPlaceColorTag();
+                placeChoice.setText(clickedPlaceItem.getPlaceName());
+                clickedColorPlaceTag = clickedPlaceItem.getPlaceColorTag();
                 mMeetingPlace = String.valueOf(placeChoice.getText());
             }
 
@@ -322,7 +326,7 @@ public class AddNewMeetingActivity extends AppCompatActivity implements TimePick
     private void meetingDisponibility() {
         dateDisponibility = timeDateStart.getTime();
         List<Meeting> mMeetingDisponibility = new ArrayList<>();
-        List<Meeting> mMeetings = mLocalApiMeeting.getMeeting();
+        List<Meeting> mMeetings = mFakeApiMeeting.getMeeting();
 
         if (mMeetings.size() != 0) {
 

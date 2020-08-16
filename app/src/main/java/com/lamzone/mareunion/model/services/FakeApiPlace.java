@@ -10,7 +10,7 @@ import java.util.List;
  * 2/to ease reading and maintain code
  */
 
-public interface LocalApiPlace {
+public interface FakeApiPlace {
 
     List<PlaceItem> getPlaceItem();
 

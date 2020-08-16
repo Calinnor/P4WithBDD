@@ -1,8 +1,22 @@
 package com.lamzone.mareunion.model.items;
 
+import androidx.annotation.NonNull;
+import androidx.room.ColumnInfo;
+import androidx.room.Entity;
+import androidx.room.ForeignKey;
+import androidx.room.PrimaryKey;
+
+@Entity(foreignKeys = @ForeignKey(entity = PlaceItem.class, parentColumns = "placeItemColor", childColumns = "placeItemId"))
 public class Meeting {
 
-    private int meetingColorTag;
+    @PrimaryKey(autoGenerate = true)
+    @NonNull
+    private int pkMeetingId;
+
+    @ColumnInfo(name = "placeItemId", index = true)//indexing is usefull when ui may search in large bdd
+    private long placeItemId;
+
+    private long meetingColorTag;
     private String meetingSubject;
     private String meetingStartHour;
     private String meetingEndHour;
@@ -11,7 +25,13 @@ public class Meeting {
     private String meetingDate;
     private long meetingDateDisponibility;
 
-    public Meeting(int meetingColorTag, String meetingSubject, String meetingStartHour, String meetingEndHour, String meetingPlaceName, String meetingParticipantsInformations, String meetingDate, long meetingDateDisponibility) {
+
+
+    public Meeting(long placeItemId, int pkMeetingId, long meetingColorTag, String meetingSubject,
+                   String meetingStartHour, String meetingEndHour, String meetingPlaceName,
+                   String meetingParticipantsInformations, String meetingDate, long meetingDateDisponibility) {
+        this.placeItemId = placeItemId;
+        this.pkMeetingId = pkMeetingId;
         this.meetingColorTag = meetingColorTag;
         this.meetingSubject = meetingSubject;
         this.meetingStartHour = meetingStartHour;
@@ -22,7 +42,13 @@ public class Meeting {
         this.meetingDateDisponibility = meetingDateDisponibility;
     }
 
-    public int getMeetingColorTag() {
+
+    /**getters*/
+    public long getPlaceItemId() {
+        return placeItemId;
+    }
+
+    public long getMeetingColorTag() {
         return meetingColorTag;
     }
 
@@ -51,4 +77,52 @@ public class Meeting {
     }
 
     public long getMeetingDateDisponibility() { return meetingDateDisponibility; }
+
+    public int getPkMeetingId() {
+        return pkMeetingId;
+    }
+
+
+
+
+    /**setters*/
+    public void setPlaceItemId(long placeItemId) {
+        this.placeItemId = placeItemId;
+    }
+
+    public void setPkMeetingId(int pkMeetingId) {
+        this.pkMeetingId = pkMeetingId;
+    }
+
+    public void setMeetingColorTag(int meetingColorTag) {
+        this.meetingColorTag = meetingColorTag;
+    }
+
+    public void setMeetingSubject(String meetingSubject) {
+        this.meetingSubject = meetingSubject;
+    }
+
+    public void setMeetingStartHour(String meetingStartHour) {
+        this.meetingStartHour = meetingStartHour;
+    }
+
+    public void setMeetingEndHour(String meetingEndHour) {
+        this.meetingEndHour = meetingEndHour;
+    }
+
+    public void setMeetingPlaceName(String meetingPlaceName) {
+        this.meetingPlaceName = meetingPlaceName;
+    }
+
+    public void setMeetingParticipantsInformations(String meetingParticipantsInformations) {
+        this.meetingParticipantsInformations = meetingParticipantsInformations;
+    }
+
+    public void setMeetingDate(String meetingDate) {
+        this.meetingDate = meetingDate;
+    }
+
+    public void setMeetingDateDisponibility(long meetingDateDisponibility) {
+        this.meetingDateDisponibility = meetingDateDisponibility;
+    }
 }
